@@ -8,13 +8,14 @@ import (
 	"image/draw"
 	"image/png"
 	"net/http"
+
 	"strconv"
 	"strings"
 
 	"github.com/golang/freetype"
+	"qart/appfs/fs"
 	"rsc.io/qr"
 	"rsc.io/qr/coding"
-	"rsc.io/swtch/appfs/fs"
 )
 
 func makeImage(req *http.Request, caption, font string, pt, size, border, scale int, f func(x, y int) uint32) *image.RGBA {

@@ -5,31 +5,38 @@
 package fs
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
-
-	"rsc.io/swtch/appfs/proto"
+	"qart/appfs/proto"
 )
 
-type context struct{}
+// Root is the root of the local file system.  It has no effect on App Engine.
+var Root = "."
 
-type cacheKey struct{}
+type Context struct{}
 
-func newContext(req *http.Request) *Context {
+type CacheKey struct{}
+
+func NewContext(req *http.Request) *Context {
 	return &Context{}
 }
 
-func (*context) cacheRead(ckey CacheKey, path string) (CacheKey, []byte, bool) {
+func (*Context) CacheRead(ckey CacheKey, path string) (CacheKey, []byte, bool) {
 	return ckey, nil, false
 }
 
-func (*context) cacheWrite(ckey CacheKey, data []byte) {
+func (*Context) CacheWrite(ckey CacheKey, data []byte) {
 }
 
-func (*context) read(path string) ([]byte, *proto.FileInfo, error) {
-	p := filepath.Join(Root, path)
+func (*Context) Read(path string) ([]byte, *proto.FileInfo, error) {
+	p, err := filepath.Abs(filepath.Join(Root, path))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Read file from: %s\n", p)
 	dir, err := os.Stat(p)
 	if err != nil {
 		return nil, nil, err
@@ -44,18 +51,30 @@ func (*context) read(path string) ([]byte, *proto.FileInfo, error) {
 	return data, fi, err
 }
 
-func (*context) write(path string, data []byte) error {
-	p := filepath.Join(Root, path)
+func (*Context) Write(path string, data []byte) error {
+	p, err := filepath.Abs(filepath.Join(Root, path))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Write file to: %s\n", p)
 	return ioutil.WriteFile(p, data, 0666)
 }
 
-func (*context) remove(path string) error {
-	p := filepath.Join(Root, path)
+func (*Context) Remove(path string) error {
+	p, err := filepath.Abs(filepath.Join(Root, path))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Remove file to: %s\n", p)
 	return os.Remove(p)
 }
 
-func (*context) mkdir(path string) error {
-	p := filepath.Join(Root, path)
+func (*Context) Mkdir(path string) error {
+	p, err := filepath.Abs(filepath.Join(Root, path))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Mkdir for: %s\n", p)
 	fi, err := os.Stat(p)
 	if err == nil && fi.IsDir() {
 		return nil
@@ -63,8 +82,12 @@ func (*context) mkdir(path string) error {
 	return os.Mkdir(p, 0777)
 }
 
-func (*context) readdir(path string) ([]proto.FileInfo, error) {
-	p := filepath.Join(Root, path)
+func (*Context) Readdir(path string) ([]proto.FileInfo, error) {
+	p, err := filepath.Abs(filepath.Join(Root, path))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Readdir to: %s\n", p)
 	dirs, err := ioutil.ReadDir(p)
 	if err != nil {
 		return nil, err

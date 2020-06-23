@@ -1,0 +1,112 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>QArt Coder</title>
+    <style>
+        #output {
+            float: left;
+            width: 250px;
+            height: 100%;
+        }
+        #help {
+            font-size: 80%;
+        }
+        #about {
+            margin-top: 2em;
+        }
+        h1 {
+            text-align: left !important;
+        }
+    </style>
+</head>
+<body>
+<div class="article">
+
+    <div id="output">
+    </div>
+
+    <div id="leftcol">
+        <h1>QArt Coder</h1>
+        <div id="controls">
+            <label for="url">URL:</label> <input id="url" type="text" size="100" value="{{.URL}}">
+            <br>
+            <div style="font-size: small;">Tip: Short URLs work best.</div>
+            <br>
+            <table id="arrows">
+                <tr>
+                    <td>
+                        <table cellspacing=0 cellpadding=0 style="border:0">
+                            <tr><td><td><a href="javascript:up()"><img src="/qr/arrow?size=48&dir=1"><td>
+                            <tr><td><a href="javascript:left()"><img src="/qr/arrow?size=48&dir=2"><td><img src="/qr/draw?show=png&i={{.Name}}"><td><a href="javascript:right()"><img src="/qr/arrow?size=48&dir=0">
+                            <tr><td><td><a href="javascript:down()"><img src="/qr/arrow?size=48&dir=3"><td>
+                        </table>
+                    </td>
+                    <td>
+                        <table cellspacing=5 cellpadding=0 style="border:0">
+                            <tr>
+                                <td><a href="javascript:smaller()"><img src="/qr/arrow?size=20&dir=2">
+                                <td>QR Size
+                                <td><a href="javascript:bigger()"><img src="/qr/arrow?size=20&dir=0">
+
+                            <tr>
+                                <td><a href="javascript:ismaller()"><img src="/qr/arrow?size=20&dir=2">
+                                <td>Image Size
+                                <td><a href="javascript:ibigger()"><img src="/qr/arrow?size=20&dir=0">
+                        </table>
+                    </td>
+                    <td>
+                        <label for="rand">
+                            <input type="checkbox" id="rand" onclick="update()"></input> Random Pixels
+                        </label>
+                        <br>
+
+                        <label for="data">
+                            <input type="checkbox" id="data" onclick="update()"></input> Data Pixels Only
+                        </label>
+                        <br>
+
+                        <label for="dither">
+                            <input type="checkbox" id="dither" onclick="update()"></input> Dither
+                        </label>
+                        <br>
+
+                        <label for="control">
+                            <input type="checkbox" id="control" onclick="update()"></input> Show Controllable Pixels
+                        </label>
+                        <br>
+
+                        <button onclick="update()">Update</button>
+
+                        <button onclick="rotate()">Rotate</button>
+                    </td>
+                </tr>
+            </table>
+
+            <div>
+                <form method="POST" enctype="multipart/form-data" action="/qr/draw?upload=1">
+                    <input type="file" name="image">
+                    <br>
+                    <input type="submit" value="Upload Image">
+                    <br>
+                    <div style="font-size: small;">Tip: small, high contrast images work best.</div>
+                </form>
+            </div>
+
+            <div id="help">
+                Use the blue buttons to move the image within the code<br>
+                and to change the size of the code and the image.<br>
+                <br>
+                <a href="https://research.swtch.com/qart">How does this work?</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/qr/static/qr.js"></script>
+    <script>
+        img = "{{.Name}}";
+        update();
+    </script>
+
+</body>
+</html>
