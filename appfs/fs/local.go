@@ -5,8 +5,8 @@
 package fs
 
 import (
-	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -36,7 +36,7 @@ func (*Context) Read(path string) ([]byte, *proto.FileInfo, error) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Read file from: %s\n", p)
+	log.Printf("Read file from: %s\n", p)
 	dir, err := os.Stat(p)
 	if err != nil {
 		return nil, nil, err
@@ -56,7 +56,7 @@ func (*Context) Write(path string, data []byte) error {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Write file to: %s\n", p)
+	log.Printf("Write file to: %s\n", p)
 	return ioutil.WriteFile(p, data, 0666)
 }
 
@@ -65,7 +65,7 @@ func (*Context) Remove(path string) error {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Remove file to: %s\n", p)
+	log.Printf("Remove file to: %s\n", p)
 	return os.Remove(p)
 }
 
@@ -74,7 +74,7 @@ func (*Context) Mkdir(path string) error {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Mkdir for: %s\n", p)
+	log.Printf("Mkdir for: %s\n", p)
 	fi, err := os.Stat(p)
 	if err == nil && fi.IsDir() {
 		return nil
@@ -87,7 +87,7 @@ func (*Context) Readdir(path string) ([]proto.FileInfo, error) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Readdir to: %s\n", p)
+	log.Printf("Readdir from: %s\n", p)
 	dirs, err := ioutil.ReadDir(p)
 	if err != nil {
 		return nil, err

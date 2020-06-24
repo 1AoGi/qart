@@ -1,16 +1,19 @@
 package main
 
 import (
+	"github.com/gorilla/mux"
 	"net/http"
 	"qart/qrweb/web"
 )
 
 func main() {
-	http.Handle("/qr", http.HandlerFunc(web.Draw))
-	http.Handle("/qr/show/*", http.HandlerFunc(web.Show))
-	http.Handle("/qr/draw", http.HandlerFunc(web.Draw))
-	http.Handle("/qr/arrow", http.HandlerFunc(web.Arrow))
-	http.Handle("/qr/static/", http.StripPrefix("/qr/static/", http.FileServer(http.Dir("./qrweb/public"))))
+	r := mux.NewRouter()
+	r.HandleFunc("/qr", web.Draw)
+	r.HandleFunc("/qr/show/{id}", web.Show)
+	r.HandleFunc("/qr/draw", web.Draw)
+	r.HandleFunc("/qr/arrow", web.Arrow)
+	r.PathPrefix("/qr/static/").Handler(http.StripPrefix("/qr/static/", http.FileServer(http.Dir("./qrweb/public"))))
+	http.Handle("/", r)
 	err := http.ListenAndServe(":8000", nil)
 	if err != nil {
 		panic(err)

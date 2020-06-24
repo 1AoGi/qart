@@ -47,6 +47,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gorilla/mux"
+
 	"qart/appfs/fs"
 	"qart/qrweb/resize"
 	"rsc.io/qr"
@@ -272,9 +274,12 @@ func (m *Image) Link() string {
 // Show is the handler for showing a stored QR code.
 func Show(w http.ResponseWriter, req *http.Request) {
 	ctxt := fs.NewContext(req)
-	tag := req.URL.Path[len("/qr/show/"):]
-	png := strings.HasSuffix(tag, ".png")
-	if png {
+
+	vars := mux.Vars(req)
+
+	tag := vars["id"]
+	isPng := strings.HasSuffix(tag, ".png")
+	if isPng {
 		tag = tag[:len(tag)-len(".png")]
 	}
 	if !isTagName(tag) {
@@ -304,7 +309,7 @@ func Show(w http.ResponseWriter, req *http.Request) {
 		m.Scale /= 2
 	}
 
-	if png {
+	if isPng {
 		if err := m.Encode(req); err != nil {
 			panic(err)
 			return
@@ -314,8 +319,14 @@ func Show(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	var templateData = struct {
+		Name string
+	}{
+		Name: tag,
+	}
+
 	w.Header().Set("Cache-Control", "public, max-age=300")
-	runTemplate(ctxt, w, "/qrweb/public/permalink.html", &m)
+	runTemplate(ctxt, w, getAssetPath("permalink.html"), &templateData)
 }
 
 func upload(w http.ResponseWriter, req *http.Request, link string) {
@@ -372,7 +383,7 @@ func upload(w http.ResponseWriter, req *http.Request, link string) {
 	tag := fmt.Sprintf("%x", h.Sum(nil))[:32]
 
 	ctxt := fs.NewContext(req)
-	if err := ctxt.Write(getUploadPath(tag + ".png"), buf.Bytes()); err != nil {
+	if err := ctxt.Write(getUploadPath(tag+".png"), buf.Bytes()); err != nil {
 		panic(err)
 	}
 
@@ -390,7 +401,7 @@ func flag(w http.ResponseWriter, req *http.Request, img string, ctxt *fs.Context
 	data = append(data, '!')
 	ctxt.Write(getFlagPath(img), data)
 
-	fmt.Fprintf(w, "Thank you.  The image has been reported.\n")
+	fmt.Fprintf(w, "Thank you. The image has been reported.\n")
 }
 
 func loadSize(ctxt *fs.Context, name string, max int) *image.RGBA {
@@ -831,7 +842,7 @@ Again:
 			// We know the 512, 256, 128, 64, 32 bits are all set.
 			// Pick one at random to clear.  This will break some
 			// checksum bits, but so be it.
-			println("oops", i, v)
+			fmt.Println("Oops - too many 1 bits ", i, v)
 			pinfo := &pixByOff[bbit+10*i+3] // TODO random
 			pinfo.Contrast = 1e9 >> 8
 			pinfo.HardZero = true
