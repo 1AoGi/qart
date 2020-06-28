@@ -6,7 +6,7 @@ import (
 	"qart/qrweb/web"
 )
 
-func main() {
+func main_old() {
 	r := mux.NewRouter()
 	r.HandleFunc("/qr", web.Draw)
 	r.HandleFunc("/qr/show/{id}", web.Show)
