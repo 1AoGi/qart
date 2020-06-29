@@ -2,10 +2,14 @@ package controllers
 
 import (
 	"crypto/sha256"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"log"
 	"qart/controllers/base"
+	"qart/models/request"
 	"qart/models/response"
+	"qart/qrweb/qr"
 	"qart/qrweb/utils"
 )
 
@@ -60,8 +64,25 @@ func (c *UploadController) Post() {
 }
 
 func (c *RenderController) Post() {
-	fmt.Println(c.GetString("key"))
+	operation, err := request.NewOperation()
+	if err != nil {
+		c.Fail(nil, 2, err.Error())
+		return
+	}
+	if err = json.Unmarshal(c.Ctx.Input.RequestBody, operation); err != nil {
+		c.Fail(nil, 2, err.Error())
+		return
+	}
+
+	data, err := qr.Draw(operation)
+	if err != nil {
+		c.Fail(nil, 2, err.Error())
+		return
+	}
+
 	c.Success(struct {
-		Key string `json:"key"`
-	}{"1"}, 0)
+		Image string `json:"image"`
+	}{
+		"data:image/png;base64," + base64.StdEncoding.EncodeToString(data),
+	}, 0)
 }
