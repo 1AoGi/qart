@@ -128,3 +128,5 @@ storage/upload/*
 !storage/upload/.gitkeep
 storage/flag/*
 !storage/flag/.gitkeep
+
+*.tmp
