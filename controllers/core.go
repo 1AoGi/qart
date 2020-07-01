@@ -34,7 +34,7 @@ func (c *UploadController) Post() {
 		c.Fail(nil, 1, err.Error())
 		return
 	}
-	fmt.Println("get file", header.Filename, "with size", header.Size)
+	log.Println("get file", header.Filename, "with size", header.Size)
 
 	buf, err := utils.GetImageThumbnail(f)
 	defer f.Close()

@@ -1,6 +1,8 @@
 package qr
 
-import "rsc.io/qr/coding"
+import (
+	"rsc.io/qr/coding"
+)
 
 type Pixinfo struct {
 	X        int
@@ -19,6 +21,6 @@ func addDither(pixByOff []Pixinfo, pix coding.Pixel, err int) {
 		return
 	}
 	pinfo := &pixByOff[pix.Offset()]
-	println("add", pinfo.X, pinfo.Y, pinfo.DTarg, err)
+	// log.Println("dither: add", pinfo.X, pinfo.Y, pinfo.DTarg, err)
 	pinfo.DTarg += err
 }

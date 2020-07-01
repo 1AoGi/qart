@@ -3,8 +3,6 @@ package qr
 import (
 	"bytes"
 	"fmt"
-	"net/http"
-	"rsc.io/qr/coding"
 	"rsc.io/qr/gf256"
 )
 
@@ -135,86 +133,4 @@ func (b *BitBlock) copyOut() {
 	b.check()
 	copy(b.bdata, b.B[:b.DataBytes])
 	copy(b.cdata, b.B[b.DataBytes:])
-}
-
-func showtable(w http.ResponseWriter, b *BitBlock, gray func(int) bool) {
-	nd := b.DataBytes
-	nc := b.CheckBytes
-
-	fmt.Fprintf(w, "<table class='matrix' cellspacing=0 cellpadding=0 border=0>\n")
-	line := func() {
-		fmt.Fprintf(w, "<tr height=1 bgcolor='#bbbbbb'><td colspan=%d>\n", (nd+nc)*8)
-	}
-	line()
-	dorow := func(row []byte) {
-		fmt.Fprintf(w, "<tr>\n")
-		for i := 0; i < (nd+nc)*8; i++ {
-			fmt.Fprintf(w, "<td")
-			v := row[i/8] >> uint(7-i&7) & 1
-			if gray(i) {
-				fmt.Fprintf(w, " class='gray'")
-			}
-			fmt.Fprintf(w, ">")
-			if v == 1 {
-				fmt.Fprintf(w, "1")
-			}
-		}
-		line()
-	}
-
-	m := b.M[len(b.M):cap(b.M)]
-	for i := len(m) - 1; i >= 0; i-- {
-		dorow(m[i])
-	}
-	m = b.M
-	for _, row := range b.M {
-		dorow(row)
-	}
-
-	fmt.Fprintf(w, "</table>\n")
-}
-
-func BitsTable(w http.ResponseWriter, req *http.Request) {
-	nd := 2
-	nc := 2
-	fmt.Fprintf(w, `<html>
-		<style type='text/css'>
-		.matrix {
-			font-family: sans-serif;
-			font-size: 0.8em;
-		}
-		table.matrix {
-			padding-left: 1em;
-			padding-right: 1em;
-			padding-top: 1em;
-			padding-bottom: 1em;
-		}
-		.matrix td {
-			padding-left: 0.3em;
-			padding-right: 0.3em;
-			border-left: 2px solid white;
-			border-right: 2px solid white;
-			text-align: center;
-			color: #aaa;
-		}
-		.matrix td.gray {
-			color: black;
-			background-color: #ddd;
-		}
-		</style>
-	`)
-	rs := gf256.NewRSEncoder(coding.Field, nc)
-	dat := make([]byte, nd+nc)
-	b := newBlock(nd, nc, rs, dat[:nd], dat[nd:])
-	for i := 0; i < nd*8; i++ {
-		b.canSet(uint(i), 0)
-	}
-	showtable(w, b, func(i int) bool { return i < nd*8 })
-
-	b = newBlock(nd, nc, rs, dat[:nd], dat[nd:])
-	for j := 0; j < (nd+nc)*8; j += 2 {
-		b.canSet(uint(j), 0)
-	}
-	showtable(w, b, func(i int) bool { return i%2 == 0 })
-
 }

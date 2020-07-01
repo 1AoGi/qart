@@ -59,7 +59,7 @@ func (op *Operation) GetScale() int {
 func (op *Operation) GetSeed() int64 {
 	seed, err := strconv.ParseInt(op.Seed, 10, 64)
 	if err != nil {
-		return int64(rand.Int63())
+		return rand.Int63()
 	}
 	return seed
 }

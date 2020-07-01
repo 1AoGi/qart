@@ -7,7 +7,6 @@ require (
 	github.com/beego/bee v1.11.1 // indirect
 	github.com/creasty/defaults v1.4.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
-	github.com/gorilla/mux v1.7.4
 	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
 	github.com/smartystreets/goconvey v1.6.4
 	golang.org/x/image v0.0.0-20200618115811-c13761719519 // indirect

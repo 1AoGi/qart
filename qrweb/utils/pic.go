@@ -24,14 +24,14 @@ func MakeImage(caption, font string, pt, size, border, scale int, f func(x, y in
 
 	// white
 	u := &image.Uniform{C: color.White}
-	draw.Draw(c, c.Bounds(), u, image.ZP, draw.Src)
+	draw.Draw(c, c.Bounds(), u, image.Point{}, draw.Src)
 
 	for y := 0; y < size; y++ {
 		for x := 0; x < size; x++ {
 			r := image.Rect((x+border)*scale, (y+border)*scale, (x+border+1)*scale, (y+border+1)*scale)
 			rgba := f(x, y)
-			u.C = color.RGBA{byte(rgba >> 24), byte(rgba >> 16), byte(rgba >> 8), byte(rgba)}
-			draw.Draw(c, r, u, image.ZP, draw.Src)
+			u.C = color.RGBA{R: byte(rgba >> 24), G: byte(rgba >> 16), B: byte(rgba >> 8), A: byte(rgba)}
+			draw.Draw(c, r, u, image.Point{}, draw.Src)
 		}
 	}
 
@@ -81,11 +81,11 @@ func makeFrame(font string, pt, vers, l, scale, dots int) image.Image {
 	nc := p.CheckBytes / p.Blocks
 	extra := p.DataBytes - nd*p.Blocks
 
-	cap := fmt.Sprintf("QR v%d, %s", vers, lev)
+	caption := fmt.Sprintf("QR v%d, %s", vers, lev)
 	if dots > 0 {
-		cap = fmt.Sprintf("QR v%d order, from bottom right", vers)
+		caption = fmt.Sprintf("QR v%d order, from bottom right", vers)
 	}
-	m := MakeImage(cap, font, pt, len(p.Pixel), 0, scale, func(x, y int) uint32 {
+	m := MakeImage(caption, font, pt, len(p.Pixel), 0, scale, func(x, y int) uint32 {
 		pix := p.Pixel[y][x]
 		switch pix.Role() {
 		case coding.Data:
@@ -122,12 +122,12 @@ func makeFrame(font string, pt, vers, l, scale, dots int) image.Image {
 		b := m.Bounds()
 		for y := 0; y <= len(p.Pixel); y++ {
 			for x := 0; x < b.Dx(); x++ {
-				m.SetRGBA(x, y*scale-(y/len(p.Pixel)), color.RGBA{127, 127, 127, 255})
+				m.SetRGBA(x, y*scale-(y/len(p.Pixel)), color.RGBA{R: 127, G: 127, B: 127, A: 255})
 			}
 		}
 		for x := 0; x <= len(p.Pixel); x++ {
 			for y := 0; y < b.Dx(); y++ {
-				m.SetRGBA(x*scale-(x/len(p.Pixel)), y, color.RGBA{127, 127, 127, 255})
+				m.SetRGBA(x*scale-(x/len(p.Pixel)), y, color.RGBA{R: 127, G: 127, B: 127, A: 255})
 			}
 		}
 		order := make([]image.Point, (p.DataBytes+p.CheckBytes)*8+1)
@@ -137,7 +137,7 @@ func makeFrame(font string, pt, vers, l, scale, dots int) image.Image {
 					continue
 				}
 				//	draw.Draw(m, m.Bounds().Add(image.Pt(x*scale, y*scale)), dot, image.ZP, draw.Over)
-				order[pix.Offset()] = image.Point{x*scale + scale/2, y*scale + scale/2}
+				order[pix.Offset()] = image.Point{X: x*scale + scale/2, Y: y*scale + scale/2}
 			}
 		}
 
@@ -177,12 +177,12 @@ func line(m *image.RGBA, p, q image.Point, mode int) {
 					if dy*dx <= -4 || dy*dx >= 4 {
 						continue
 					}
-					m.SetRGBA(p.X+x*xsign+dx, p.Y+y*ysign+dy, color.RGBA{255, 192, 192, 255})
+					m.SetRGBA(p.X+x*xsign+dx, p.Y+y*ysign+dy, color.RGBA{R: 255, G: 192, B: 192, A: 255})
 				}
 			}
 
 		case 1:
-			m.SetRGBA(p.X+x*xsign, p.Y+y*ysign, color.RGBA{128, 0, 0, 255})
+			m.SetRGBA(p.X+x*xsign, p.Y+y*ysign, color.RGBA{R: 128, A: 255})
 		}
 	}
 	if dx > dy {

@@ -123,7 +123,7 @@ func (m *Image) Encode() error {
 
 	m.rotate(p, m.Rotation)
 
-	rand := rand.New(rand.NewSource(m.Seed))
+	randNumber := rand.New(rand.NewSource(m.Seed))
 
 	// QR parameters.
 	nd := p.DataBytes / p.Blocks
@@ -139,7 +139,7 @@ func (m *Image) Encode() error {
 		for x, pix := range row {
 			targ, contrast := m.target(x, y)
 			if m.RandControl && contrast >= 0 {
-				contrast = rand.Intn(128) + 64*((x+y)%2) + 64*((x+y)%3%2)
+				contrast = randNumber.Intn(128) + 64*((x+y)%2) + 64*((x+y)%3%2)
 			}
 			expect[y][x] = pix&coding.Black != 0
 			if r := pix.Role(); r == coding.Data || r == coding.Check {
@@ -227,7 +227,7 @@ Again:
 		}
 		for i := range order {
 			po := &order[i]
-			po.Priority = pixByOff[po.Off].Contrast<<8 | rand.Intn(256)
+			po.Priority = pixByOff[po.Off].Contrast<<8 | randNumber.Intn(256)
 		}
 		sort.Sort(byPriority(order))
 
@@ -379,7 +379,7 @@ Again:
 			// We know the 512, 256, 128, 64, 32 bits are all set.
 			// Pick one at random to clear.  This will break some
 			// checksum bits, but so be it.
-			log.Println("Oops - too many 1 bits ", i, v)
+			log.Println("Oops - too many 1 bits", i, v)
 			pinfo := &pixByOff[bbit+10*i+3] // TODO random
 			pinfo.Contrast = 1e9 >> 8
 			pinfo.HardZero = true
@@ -398,7 +398,7 @@ Again:
 	coding.Num(num).Encode(&b1, p.Version)
 	b1.AddCheckBytes(p.Version, p.Level)
 	if !bytes.Equal(b.Bytes(), b1.Bytes()) {
-		fmt.Printf("mismatch\n%d %x\n%d %x\n", len(b.Bytes()), b.Bytes(), len(b1.Bytes()), b1.Bytes())
+		log.Printf("mismatch\n%d %x\n%d %x\n", len(b.Bytes()), b.Bytes(), len(b1.Bytes()), b1.Bytes())
 		panic("byte mismatch")
 	}
 
@@ -411,7 +411,7 @@ Again:
 		for y, row := range expect {
 			for x, pix := range row {
 				if cc.Black(x, y) != pix {
-					println("mismatch", x, y, p.Pixel[y][x].String())
+					log.Println("mismatch", x, y, p.Pixel[y][x].String())
 				}
 			}
 		}
