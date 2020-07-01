@@ -10,6 +10,7 @@ import (
 
 func init() {
 	beego.Router("/", &controllers.MainController{})
+	beego.Router("/image/placeholder/?:size", &controllers.PlaceHolderController{})
 	ns := beego.NewNamespace("/v1",
 		beego.NSRouter("/render", &controllers.RenderController{}),
 		beego.NSRouter("/render/upload", &controllers.UploadController{}),

@@ -16,8 +16,9 @@ func (c *QArtController) JSON(data interface{}) {
 
 func (c *QArtController) Success(data interface{}, code int) {
 	r := &response.BaseResponse{
-		Code: code,
-		Data: data,
+		Success: true,
+		Code:    code,
+		Data:    data,
 	}
 	c.JSON(r)
 }

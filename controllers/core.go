@@ -11,6 +11,7 @@ import (
 	"qart/models/response"
 	"qart/qrweb/qr"
 	"qart/qrweb/utils"
+	"time"
 )
 
 type UploadController struct {
@@ -74,9 +75,20 @@ func (c *RenderController) Post() {
 		return
 	}
 
+	t0 := time.Now()
 	data, err := qr.Draw(operation)
+	t1 := time.Now()
+	log.Printf("render in %s\n", t1.Sub(t0).String())
 	if err != nil {
 		c.Fail(nil, 2, err.Error())
+		return
+	}
+	if c.GetString("debug") == "1" {
+		c.Ctx.Output.ContentType(".png")
+		err = c.Ctx.Output.Body(data)
+		if err != nil {
+			panic(err)
+		}
 		return
 	}
 

@@ -33,8 +33,8 @@ func (op *Operation) GetVersion() int {
 	if op.Version < 0 {
 		return 0
 	}
-	if op.Version > 40 {
-		return 40
+	if op.Version > 9 {
+		return 9
 	}
 	return op.Version
 }

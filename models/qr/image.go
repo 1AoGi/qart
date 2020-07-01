@@ -3,6 +3,7 @@ package qr
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"math/rand"
 	utils2 "qart/qrweb/utils"
 	"rsc.io/qr"
@@ -378,7 +379,7 @@ Again:
 			// We know the 512, 256, 128, 64, 32 bits are all set.
 			// Pick one at random to clear.  This will break some
 			// checksum bits, but so be it.
-			fmt.Println("Oops - too many 1 bits ", i, v)
+			log.Println("Oops - too many 1 bits ", i, v)
 			pinfo := &pixByOff[bbit+10*i+3] // TODO random
 			pinfo.Contrast = 1e9 >> 8
 			pinfo.HardZero = true
