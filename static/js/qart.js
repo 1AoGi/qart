@@ -1,19 +1,34 @@
+function errorHandler(response) {
+    if (response && !response.success) {
+        alert(response.message);
+    }
+    return response
+}
+
 function render(operation) {
-    fetch('/v1/render', {
+    return fetch('/v1/render', {
         method: 'POST',
         body: JSON.stringify(operation)
     }).then(function (response) {
         return response.json();
-    }).then(function (response) {
-        if (!response.success) {
-            alert(response.message);
-            return;
-        }
+    }).then(errorHandler).then(function (response) {
         const element = document.getElementById('op-qr-code');
         if (element) {
             element.src = response.data.image;
         }
-    })
+    });
+}
+
+function upload(file) {
+    let data = new FormData();
+    data.append('image', file);
+
+    return fetch('/v1/render/upload', {
+        method: 'POST',
+        body: data
+    }).then(function (response) {
+        return response.json();
+    }).then(errorHandler);
 }
 
 function updateOperation(element, obj) {
@@ -63,13 +78,26 @@ function updateOperation(element, obj) {
             updateOperation(event.target, operation);
         };
         if (element.type === 'text') {
-            element.addEventListener('input', handler);
+            element.addEventListener('input', handler, false);
         } else {
             element.addEventListener('change', handler);
         }
     });
     document.getElementById('op-refresh').addEventListener('click', function (event) {
         render(operation);
-    })
+    }, false);
+    let uploadInput = document.getElementById('op-upload-input');
+    uploadInput.addEventListener('change', function(event) {
+        let files = event.target.files;
+        if (files && files.length > 0) {
+            upload(files[0]).then(function (response) {
+                operation.image = response.data.id;
+                render(operation);
+            });
+        }
+    }, false);
+    document.getElementById('op-upload').addEventListener('click', function (event) {
+        uploadInput.click();
+    }, false);
 })();
 

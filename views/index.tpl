@@ -42,7 +42,10 @@
                 <h1>QArt Coder</h1>
                 <form class="row g-3" id="parameter-form">
                     <div class="input-group mb-3 col-md-16">
-                        <button type="button" class="btn btn-primary">Upload</button>
+                        <button id="op-upload" type="button" class="btn btn-primary file">
+                            Upload
+                        </button>
+                        <input type="file" id="op-upload-input" multiple accept="image/*" style="display:none">
                         <input class="form-control" type="text" value="https://example.com" id="op-url">
                     </div>
                     <div class="form-check form-switch col-md-6">
