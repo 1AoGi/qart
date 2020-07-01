@@ -12,7 +12,6 @@ import (
 	"qart/models/response"
 	"qart/qrweb/qr"
 	"qart/qrweb/utils"
-	"time"
 )
 
 type UploadController struct {
@@ -76,17 +75,19 @@ func (c *RenderController) Post() {
 		c.Fail(nil, 2, err.Error())
 		return
 	}
+	sessionKey := sessionutils.SessionKey(operation.Image, "image")
+	if operation.Image == "default" && c.GetSession(sessionKey) == nil {
+		data, _, _ := utils.Read(utils.GetUploadPath("default.png"))
+		c.SetSession(sessionKey, data)
+	}
 
-	t0 := time.Now()
-	sessionData := c.GetSession(sessionutils.SessionKey(operation.Image, "image"))
+	sessionData := c.GetSession(sessionKey)
 	if sessionData == nil {
 		c.Fail(nil, 2, "image not found, please upload first")
 		return
 	}
 	buffer := sessionData.([]byte)
 	img, err := qr.Draw(operation, buffer)
-	t1 := time.Now()
-	log.Printf("render in %s\n", t1.Sub(t0).String())
 	if err != nil {
 		c.Fail(nil, 2, err.Error())
 		return
