@@ -34,7 +34,7 @@
                         <button id="op-refresh" type="button" class="btn btn-primary">Refresh</button>
                     </div>
                     <div class="col-6">
-                        <button type="button" class="btn btn-primary">Share</button>
+                        <button id="op-share" type="button" class="btn btn-primary">Share</button>
                     </div>
                 </div>
             </div>

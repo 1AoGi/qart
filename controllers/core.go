@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"qart/controllers/base"
+	"qart/controllers/sessionutils"
 	"qart/models/request"
 	"qart/models/response"
 	"qart/qrweb/qr"
@@ -45,6 +46,7 @@ func (c *UploadController) Post() {
 	}
 
 	tag := fmt.Sprintf("%x", sha256.Sum256(buf.Bytes()))
+	c.SetSession(sessionutils.SessionKey(tag, "image"), buf.Bytes()) // store image data in session
 	filePath := utils.GetUploadPath(tag + ".png")
 	err = utils.Write(filePath, buf.Bytes())
 	if err != nil {
@@ -76,13 +78,27 @@ func (c *RenderController) Post() {
 	}
 
 	t0 := time.Now()
-	data, err := qr.Draw(operation)
+	sessionData := c.GetSession(sessionutils.SessionKey(operation.Image, "image"))
+	if sessionData == nil {
+		c.Fail(nil, 2, "image not found, please upload first")
+		return
+	}
+	buffer := sessionData.([]byte)
+	img, err := qr.Draw(operation, buffer)
 	t1 := time.Now()
 	log.Printf("render in %s\n", t1.Sub(t0).String())
 	if err != nil {
 		c.Fail(nil, 2, err.Error())
 		return
 	}
+	var data []byte
+	switch {
+	case img.SaveControl:
+		data = img.Control
+	default:
+		data = img.Code.PNG()
+	}
+	c.SetSession(sessionutils.SessionKey(operation.Image, "config"), img)
 	if c.GetString("debug") == "1" {
 		c.Ctx.Output.ContentType(".png")
 		err = c.Ctx.Output.Body(data)

@@ -31,6 +31,17 @@ function upload(file) {
     }).then(errorHandler);
 }
 
+function share(operation) {
+    return fetch('/v1/share', {
+        method: 'POST',
+        body: JSON.stringify({
+            image: operation.image
+        })
+    }).then(function (response) {
+        return response.json();
+    }).then(errorHandler);
+}
+
 function updateOperation(element, obj) {
     if (!obj || !element.id || !element.id.startsWith('op-')) {
         return;
@@ -99,5 +110,9 @@ function updateOperation(element, obj) {
     document.getElementById('op-upload').addEventListener('click', function (event) {
         uploadInput.click();
     }, false);
+    document.getElementById('op-share').addEventListener('click', function (event) {
+        share(operation).then(function (response) {
+            window.open(`/share/${response.data.id}`);
+        });
+    });
 })();
-

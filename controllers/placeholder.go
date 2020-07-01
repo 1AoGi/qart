@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/astaxie/beego"
 	"html/template"
 	"math/rand"
@@ -17,16 +18,17 @@ type PlaceHolder struct {
 	Width  int
 	Height int
 	Random string
+	Title  string
 }
 
 var SvgTemplate = `<svg width="{{.Width}}" height="{{.Height}}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {{.Width}} {{.Height}}" preserveAspectRatio="none">
 	<defs>
-		<style type="text/css">#holder_{{.Random}} text { fill:rgba(255,255,255,.75);font-weight:normal;font-family:Helvetica, monospace;font-size:{{fontsize .}}pt } </style>
+		<style type="text/css">#holder_{{.Random}} text { fill:rgba(255,255,255,.75);font-weight:normal;font-family:Helvetica, monospace;font-size:{{fontsize .}}pt; padding: 10% } </style>
 	</defs>
 	<g id="holder_{{.Random}}">
 		<rect width="{{.Width}}" height="{{.Height}}" fill="#777"></rect>
 		<g>
-			<text x="0" y="{{fontsize .}}">{{.Width}}x{{.Height}}</text>
+			<text x="0" y="{{fontsize .}}">{{.Title}}</text>
 		</g>
 	</g>
 </svg>`
@@ -47,6 +49,7 @@ func (p *PlaceHolderController) Get() {
 	height := 0
 	var err error
 	size := p.Ctx.Input.Param(":size")
+	title := p.Ctx.Input.Param(":title")
 	if size != "" {
 		seps := strings.Split(size, "x")
 		if len(seps) == 2 {
@@ -61,14 +64,17 @@ func (p *PlaceHolderController) Get() {
 		}
 	}
 	if width == 0 && height == 0 {
-		width = 100
-		height = 100
+		width = 200
+		height = 200
 	}
-
+	if title == "" {
+		title = fmt.Sprintf("%vx%v", width, height)
+	}
 	placeHolder := &PlaceHolder{
 		Width:  width,
 		Height: height,
 		Random: strconv.Itoa(int(rand.Int31())),
+		Title:  title,
 	}
 	tpl, err := GetTemplate()
 	if err != nil {

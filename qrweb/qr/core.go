@@ -7,11 +7,10 @@ import (
 	"qart/models/qr"
 	"qart/models/request"
 	"qart/qrweb/resize"
-	"qart/qrweb/utils"
 )
 
-func Draw(op *request.Operation) ([]byte, error) {
-	target := makeTarget(op.Image, 17+4*op.Version+op.Size)
+func Draw(op *request.Operation, buffer []byte) (*qr.Image, error) {
+	target := makeTarget(buffer, 17+4*op.Version+op.Size)
 
 	img := &qr.Image{
 		Name:         op.Image,
@@ -34,23 +33,11 @@ func Draw(op *request.Operation) ([]byte, error) {
 	if err := img.Encode(); err != nil {
 		return nil, err
 	}
-
-	var dat []byte
-	switch {
-	case img.SaveControl:
-		dat = img.Control
-	default:
-		dat = img.Code.PNG()
-	}
-	return dat, nil
+	return img, nil
 }
 
-func loadSize(name string, max int) *image.RGBA {
-	data, _, err := utils.Read(getUploadPath(name + ".png"))
-	if err != nil {
-		panic(err)
-	}
-	i, _, err := image.Decode(bytes.NewBuffer(data))
+func loadSize(buffer []byte, max int) *image.RGBA {
+	i, _, err := image.Decode(bytes.NewBuffer(buffer))
 	if err != nil {
 		panic(err)
 	}
@@ -71,8 +58,8 @@ func loadSize(name string, max int) *image.RGBA {
 	return irgba
 }
 
-func makeTarget(name string, max int) [][]int {
-	i := loadSize(name, max)
+func makeTarget(buffer []byte, max int) [][]int {
+	i := loadSize(buffer, max)
 	b := i.Bounds()
 	dx, dy := b.Dx(), b.Dy()
 	targ := make([][]int, dy)
