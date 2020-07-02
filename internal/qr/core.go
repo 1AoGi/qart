@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"image"
 	"path/filepath"
-	"qart/models/qr"
-	"qart/models/request"
-	"qart/qrweb/resize"
+	"github.com/tautcony/qart/internal/resize"
+	"github.com/tautcony/qart/models/qr"
+	"github.com/tautcony/qart/models/request"
 )
 
 func Draw(op *request.Operation, buffer []byte) (*qr.Image, error) {

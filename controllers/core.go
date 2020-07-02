@@ -6,12 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"qart/controllers/base"
-	"qart/controllers/sessionutils"
-	"qart/models/request"
-	"qart/models/response"
-	"qart/qrweb/qr"
-	"qart/qrweb/utils"
+	"github.com/tautcony/qart/controllers/base"
+	"github.com/tautcony/qart/controllers/sessionutils"
+	"github.com/tautcony/qart/internal/qr"
+	"github.com/tautcony/qart/internal/utils"
+	"github.com/tautcony/qart/models/request"
+	"github.com/tautcony/qart/models/response"
 )
 
 type UploadController struct {

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
-	_ "qart/routers"
+	_ "github.com/tautcony/qart/routers"
 	"runtime"
 	"testing"
 

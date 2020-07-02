@@ -2,7 +2,7 @@ package base
 
 import (
 	"github.com/astaxie/beego"
-	"qart/models/response"
+	"github.com/tautcony/qart/models/response"
 )
 
 type QArtController struct {
