@@ -107,6 +107,10 @@ function updateOperation(element, obj) {
             });
         }
     }, false);
+    document.getElementById('op-qr-code').addEventListener('click', function (event) {
+        operation.rotation = (operation.rotation + 1) % 4;
+        render(operation);
+    }, false);
     document.getElementById('op-upload').addEventListener('click', function (event) {
         uploadInput.click();
     }, false);

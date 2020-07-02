@@ -20,7 +20,7 @@ type Operation struct {
 	SaveControl  bool   `json:"savecontrol" default:"false"`
 	Seed         string `json:"seed"`
 	Scale        int    `json:"scale" default:"4"`
-	Rotation     int    `json:"rotate" default:"0"` // range in [0,3]
+	Rotation     int    `json:"rotation" default:"0"` // range in [0,3]
 }
 
 func (op *Operation) SetDefaults() {

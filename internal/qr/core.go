@@ -1,18 +1,18 @@
 package qr
 
 import (
-	"bytes"
-	"image"
-	"path/filepath"
-	"github.com/tautcony/qart/internal/resize"
+	"github.com/nfnt/resize"
 	"github.com/tautcony/qart/models/qr"
 	"github.com/tautcony/qart/models/request"
+	"image"
+	"image/color"
+	_ "image/png"
 )
 
-func Draw(op *request.Operation, buffer []byte) (*qr.Image, error) {
-	target := makeTarget(buffer, 17+4*op.Version+op.Size)
+func Draw(op *request.Operation, i image.Image) (*qr.Image, error) {
+	target := makeTarget(i, 17+4*op.Version+op.Size)
 
-	img := &qr.Image{
+	qrImage := &qr.Image{
 		Name:         op.Image,
 		Dx:           op.Dx,
 		Dy:           op.Dy,
@@ -30,17 +30,13 @@ func Draw(op *request.Operation, buffer []byte) (*qr.Image, error) {
 		Size:         op.Size,
 	}
 
-	if err := img.Encode(); err != nil {
+	if err := qrImage.Encode(); err != nil {
 		return nil, err
 	}
-	return img, nil
+	return qrImage, nil
 }
 
-func loadSize(buffer []byte, max int) *image.RGBA {
-	i, _, err := image.Decode(bytes.NewBuffer(buffer))
-	if err != nil {
-		panic(err)
-	}
+func makeTarget(i image.Image, max int) [][]int {
 	b := i.Bounds()
 	dx, dy := max, max
 	if b.Dx() > b.Dy() {
@@ -48,42 +44,25 @@ func loadSize(buffer []byte, max int) *image.RGBA {
 	} else {
 		dx = b.Dx() * dy / b.Dy()
 	}
-	var irgba *image.RGBA
-	switch i := i.(type) {
-	case *image.RGBA:
-		irgba = resize.ResizeRGBA(i, i.Bounds(), dx, dy)
-	case *image.NRGBA:
-		irgba = resize.ResizeNRGBA(i, i.Bounds(), dx, dy)
-	}
-	return irgba
-}
+	thumbnail := resize.Resize(uint(dx), uint(dy), i, resize.Bilinear)
 
-func makeTarget(buffer []byte, max int) [][]int {
-	i := loadSize(buffer, max)
-	b := i.Bounds()
-	dx, dy := b.Dx(), b.Dy()
-	targ := make([][]int, dy)
+	b = thumbnail.Bounds()
+	dx, dy = b.Dx(), b.Dy()
+	target := make([][]int, dy)
 	arr := make([]int, dx*dy)
 	for y := 0; y < dy; y++ {
-		targ[y], arr = arr[:dx], arr[dx:]
-		row := targ[y]
+		target[y], arr = arr[:dx], arr[dx:]
+		row := target[y]
 		for x := 0; x < dx; x++ {
-			p := i.Pix[y*i.Stride+4*x:]
-			r, g, b, a := p[0], p[1], p[2], p[3]
+			p := thumbnail.At(x, y)
+			_, _, _, a := p.RGBA()
+			luminance := color.Gray16Model.Convert(p).(color.Gray16)
 			if a == 0 {
 				row[x] = -1
 			} else {
-				row[x] = int((299*uint32(r) + 587*uint32(g) + 114*uint32(b) + 500) / 1000)
+				row[x] = int(luminance.Y >> 8)
 			}
 		}
 	}
-	return targ
-}
-
-func getStoragePath(elem ...string) string {
-	return filepath.Join("storage", filepath.Join(elem...))
-}
-
-func getUploadPath(name string) string {
-	return getStoragePath("upload", name)
+	return target
 }
