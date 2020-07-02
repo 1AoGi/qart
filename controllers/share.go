@@ -24,7 +24,8 @@ func (c *ShareController) CreateShare() {
 	}
 	config := c.GetSession(sessionutils.SessionKey(share.Image, "config"))
 	if config == nil {
-		panic("config not found")
+		c.Fail(nil, 2, "Image not found")
+		return
 	}
 	image := config.(*qr.Image)
 	pngData := image.Code.PNG()
