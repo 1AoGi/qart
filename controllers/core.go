@@ -1,17 +1,20 @@
 package controllers
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log"
 	"github.com/tautcony/qart/controllers/base"
 	"github.com/tautcony/qart/controllers/sessionutils"
 	"github.com/tautcony/qart/internal/qr"
 	"github.com/tautcony/qart/internal/utils"
 	"github.com/tautcony/qart/models/request"
 	"github.com/tautcony/qart/models/response"
+	"image"
+	"image/png"
+	"log"
 )
 
 type UploadController struct {
@@ -36,23 +39,22 @@ func (c *UploadController) Post() {
 	}
 	log.Println("get file", header.Filename, "with size", header.Size)
 
-	buf, err := utils.GetImageThumbnail(f)
+	img, err := utils.GetImageThumbnail(f)
 	defer f.Close()
 	if err != nil {
-		log.Println("downsample err ", err)
+		log.Println("down sampling err ", err)
 		c.Fail(nil, 2, err.Error())
 		return
 	}
 
-	tag := fmt.Sprintf("%x", sha256.Sum256(buf.Bytes()))
-	c.SetSession(sessionutils.SessionKey(tag, "image"), buf.Bytes()) // store image data in session
-	filePath := utils.GetUploadPath(tag + ".png")
-	err = utils.Write(filePath, buf.Bytes())
-	if err != nil {
-		log.Println("write file err ", err)
-		c.Fail(nil, 3, err.Error())
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, img); err != nil {
+		c.Fail(nil, 2, err.Error())
 		return
 	}
+	tag := fmt.Sprintf("%x", sha256.Sum256(buf.Bytes()))
+	c.SetSession(sessionutils.SessionKey(tag, "image"), img) // store image data in session
+
 	c.JSON(&response.BaseResponse{
 		Data: struct {
 			Id string `json:"id"`
@@ -78,7 +80,10 @@ func (c *RenderController) Post() {
 	sessionKey := sessionutils.SessionKey(operation.Image, "image")
 	if operation.Image == "default" && c.GetSession(sessionKey) == nil {
 		data, _, _ := utils.Read(utils.GetUploadPath("default.png"))
-		c.SetSession(sessionKey, data)
+		defaultImage, err := png.Decode(bytes.NewBuffer(data))
+		if err == nil {
+			c.SetSession(sessionKey, defaultImage)
+		}
 	}
 
 	sessionData := c.GetSession(sessionKey)
@@ -86,8 +91,8 @@ func (c *RenderController) Post() {
 		c.Fail(nil, 2, "image not found, please upload first")
 		return
 	}
-	buffer := sessionData.([]byte)
-	img, err := qr.Draw(operation, buffer)
+	uploadImage := sessionData.(image.Image)
+	img, err := qr.Draw(operation, uploadImage)
 	if err != nil {
 		c.Fail(nil, 2, err.Error())
 		return
