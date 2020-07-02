@@ -5,7 +5,7 @@ import (
 	"image"
 	"image/png"
 	"io"
-	"qart/qrweb/resize"
+	"github.com/tautcony/qart/internal/resize"
 )
 
 func GetImageThumbnail(r io.Reader) (bytes.Buffer, error) {

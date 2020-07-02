@@ -5,7 +5,7 @@ package routers
 
 import (
 	"github.com/astaxie/beego"
-	"qart/controllers"
+	"github.com/tautcony/qart/controllers"
 )
 
 func init() {

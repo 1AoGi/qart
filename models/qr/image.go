@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	utils2 "qart/qrweb/utils"
+	"github.com/tautcony/qart/internal/utils"
 	"rsc.io/qr"
 	"rsc.io/qr/coding"
 	"rsc.io/qr/gf256"
@@ -420,7 +420,7 @@ Again:
 	m.Code = &qr.Code{Bitmap: cc.Bitmap, Size: cc.Size, Stride: cc.Stride, Scale: m.Scale}
 
 	if m.SaveControl {
-		m.Control = utils2.PngEncode(utils2.MakeImage("", "", 0, cc.Size, 4, m.Scale, func(x, y int) (rgba uint32) {
+		m.Control = utils.PngEncode(utils.MakeImage("", "", 0, cc.Size, 4, m.Scale, func(x, y int) (rgba uint32) {
 			pix := p.Pixel[y][x]
 			if pix.Role() == coding.Data || pix.Role() == coding.Check {
 				pinfo := &pixByOff[pix.Offset()]

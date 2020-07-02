@@ -4,11 +4,11 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"qart/controllers/base"
-	"qart/controllers/sessionutils"
-	"qart/models/qr"
-	"qart/models/request"
-	"qart/qrweb/utils"
+	"github.com/tautcony/qart/controllers/base"
+	"github.com/tautcony/qart/controllers/sessionutils"
+	"github.com/tautcony/qart/internal/utils"
+	"github.com/tautcony/qart/models/qr"
+	"github.com/tautcony/qart/models/request"
 )
 
 type ShareController struct {

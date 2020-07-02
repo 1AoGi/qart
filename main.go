@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/astaxie/beego"
 	"os"
-	_ "qart/routers"
+	_ "github.com/tautcony/qart/routers"
 )
 
 func main() {

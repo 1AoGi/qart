@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"qart/models"
+	"github.com/tautcony/qart/models"
 )
 
 func Read(path string) ([]byte, *models.FileInfo, error) {
