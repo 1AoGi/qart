@@ -145,7 +145,7 @@ func Resample(m image.Image, r image.Rectangle, w, h int) *image.RGBA {
 			g := uint8(g32 >> 8)
 			b := uint8(b32 >> 8)
 			a := uint8(a32 >> 8)
-			img.SetRGBA(x, y, color.RGBA{r, g, b, a})
+			img.SetRGBA(x, y, color.RGBA{R: r, G: g, B: b, A: a})
 		}
 	}
 	return img
