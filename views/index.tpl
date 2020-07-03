@@ -3,7 +3,7 @@
 <html dir="ltr" lang="{{.CurLang.Lang}}">
 <head>
     <title>QArt Coder</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
     <style>
         .qr-container {
@@ -34,7 +34,7 @@
                     <img id="op-qr-code"
                          class="figure-img img-fluid rounded"
                          src="/image/placeholder/800x800" alt="QR Code"
-                         data-toggle="tooltip" data-placement="top" title="{{i18n .Lang "index.rotate"}}"
+                         data-toggle="tooltip" data-placement="top" title='{{i18n .Lang "index.rotate"}}'
                     />
                 </figure>
                 <div class="row g-3">
@@ -47,8 +47,8 @@
                 </div>
             </div>
             <div class="parameter-container col-sm-6 col-md-8 col-lg-9">
-                <h1 class="row">
-                    <div class="col">QArt Coder</div>
+                <div class="row">
+                    <h1 class="col">QArt Coder</h1>
                     <div class="dropdown col">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
                             {{.CurLang.Name}}
@@ -59,7 +59,7 @@
                             {{end}}
                         </ul>
                     </div>
-                </h1>
+                </div>
                 <form class="row g-3" id="parameter-form">
                     <div class="input-group mb-3 col-md-16">
                         <button id="op-upload" type="button" class="btn btn-primary file">

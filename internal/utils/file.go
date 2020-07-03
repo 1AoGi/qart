@@ -1,14 +1,14 @@
 package utils
 
 import (
+	"github.com/tautcony/qart/internal"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
-	"github.com/tautcony/qart/models"
 )
 
-func Read(path string) ([]byte, *models.FileInfo, error) {
+func Read(path string) ([]byte, *internal.FileInfo, error) {
 	p, err := filepath.Abs(path)
 	log.Printf("Read <- %s\n", p)
 	if err != nil {
@@ -18,7 +18,7 @@ func Read(path string) ([]byte, *models.FileInfo, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	fi := &models.FileInfo{
+	fi := &internal.FileInfo{
 		Name:    dir.Name(),
 		ModTime: dir.ModTime(),
 		Size:    dir.Size(),

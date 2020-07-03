@@ -7,8 +7,8 @@ import (
 	"github.com/tautcony/qart/controllers/base"
 	"github.com/tautcony/qart/controllers/constants"
 	"github.com/tautcony/qart/controllers/sessionutils"
+	"github.com/tautcony/qart/internal/qr"
 	"github.com/tautcony/qart/internal/utils"
-	"github.com/tautcony/qart/models/qr"
 	"github.com/tautcony/qart/models/request"
 )
 

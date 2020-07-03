@@ -3,9 +3,9 @@ package qr
 import (
 	"bytes"
 	"fmt"
+	"github.com/tautcony/qart/internal/utils"
 	"log"
 	"math/rand"
-	"github.com/tautcony/qart/internal/utils"
 	"rsc.io/qr"
 	"rsc.io/qr/coding"
 	"rsc.io/qr/gf256"

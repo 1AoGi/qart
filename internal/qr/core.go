@@ -2,17 +2,16 @@ package qr
 
 import (
 	"github.com/nfnt/resize"
-	"github.com/tautcony/qart/models/qr"
 	"github.com/tautcony/qart/models/request"
 	"image"
 	"image/color"
 	_ "image/png"
 )
 
-func Draw(op *request.Operation, i image.Image) (*qr.Image, error) {
+func Draw(op *request.Operation, i image.Image) (*Image, error) {
 	target := makeTarget(i, 17+4*op.Version+op.Size)
 
-	qrImage := &qr.Image{
+	qrImage := &Image{
 		Name:         op.Image,
 		Dx:           op.Dx,
 		Dy:           op.Dy,
