@@ -12,7 +12,7 @@ type Operation struct {
 	Dy           int    `json:"dy" default:"4"`
 	Size         int    `json:"size" default:"0"`
 	URL          string `json:"url" default:"https://example.com"`
-	Version      int    `json:"version" default:"6"` // range in [0,9]
+	Version      int    `json:"version" default:"6"` // range in [1,9]
 	Mask         int    `json:"mask" default:"2"`
 	RandControl  bool   `json:"randcontrol" default:"false"`
 	Dither       bool   `json:"dither" default:"false"`
