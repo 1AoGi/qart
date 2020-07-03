@@ -7,11 +7,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/tautcony/qart/controllers/base"
+	"github.com/tautcony/qart/controllers/constants"
 	"github.com/tautcony/qart/controllers/sessionutils"
 	"github.com/tautcony/qart/internal/qr"
 	"github.com/tautcony/qart/internal/utils"
 	"github.com/tautcony/qart/models/request"
-	"github.com/tautcony/qart/models/response"
 	"image"
 	"image/png"
 	"log"
@@ -34,7 +34,7 @@ func (c *UploadController) Post() {
 	f, header, err := c.GetFile("image")
 	if err != nil {
 		log.Println("get file err ", err)
-		c.Fail(nil, 1, err.Error())
+		c.Fail(nil, constants.UploadFailed, err.Error())
 		return
 	}
 	log.Println("get file", header.Filename, "with size", header.Size)
@@ -43,41 +43,36 @@ func (c *UploadController) Post() {
 	defer f.Close()
 	if err != nil {
 		log.Println("down sampling err ", err)
-		c.Fail(nil, 2, err.Error())
+		c.Fail(nil, constants.ConvertFailed, err.Error())
 		return
 	}
 
 	var buf bytes.Buffer
 	if err := png.Encode(&buf, img); err != nil {
-		c.Fail(nil, 2, err.Error())
+		c.Fail(nil, constants.EncodeFailed, err.Error())
 		return
 	}
 	tag := fmt.Sprintf("%x", sha256.Sum256(buf.Bytes()))
-	c.SetSession(sessionutils.SessionKey(tag, "image"), img) // store image data in session
+	c.SetSession(sessionutils.SessionKey(tag, constants.SessionImageKey), img) // store image data in session
 
-	c.JSON(&response.BaseResponse{
-		Data: struct {
-			Id string `json:"id"`
-		}{
-			tag,
-		},
-		Success: true,
-		Code:    0,
-		Message: "0",
-	})
+	c.Success(struct {
+		Id string `json:"id"`
+	}{
+		tag,
+	}, constants.Success)
 }
 
 func (c *RenderController) Post() {
 	operation, err := request.NewOperation()
 	if err != nil {
-		c.Fail(nil, 2, err.Error())
+		c.Fail(nil, constants.OperationInvalid, err.Error())
 		return
 	}
 	if err = json.Unmarshal(c.Ctx.Input.RequestBody, operation); err != nil {
-		c.Fail(nil, 2, err.Error())
+		c.Fail(nil, constants.RequestInvalid, err.Error())
 		return
 	}
-	sessionKey := sessionutils.SessionKey(operation.Image, "image")
+	sessionKey := sessionutils.SessionKey(operation.Image, constants.SessionImageKey)
 	if operation.Image == "default" && c.GetSession(sessionKey) == nil {
 		data, _, _ := utils.Read(utils.GetUploadPath("default.png"))
 		defaultImage, err := png.Decode(bytes.NewBuffer(data))
@@ -88,13 +83,13 @@ func (c *RenderController) Post() {
 
 	sessionData := c.GetSession(sessionKey)
 	if sessionData == nil {
-		c.Fail(nil, 2, "image not found, please upload first")
+		c.Fail(nil, constants.ImageNotFound, "image not found, please upload first")
 		return
 	}
 	uploadImage := sessionData.(image.Image)
 	img, err := qr.Draw(operation, uploadImage)
 	if err != nil {
-		c.Fail(nil, 2, err.Error())
+		c.Fail(nil, constants.EncodeFailed, err.Error())
 		return
 	}
 	var data []byte
@@ -104,7 +99,7 @@ func (c *RenderController) Post() {
 	default:
 		data = img.Code.PNG()
 	}
-	c.SetSession(sessionutils.SessionKey(operation.Image, "config"), img)
+	c.SetSession(sessionutils.SessionKey(operation.Image, constants.SessionConfigKey), img)
 	if c.GetString("debug") == "1" {
 		c.Ctx.Output.ContentType(".png")
 		err = c.Ctx.Output.Body(data)
@@ -118,5 +113,5 @@ func (c *RenderController) Post() {
 		Image string `json:"image"`
 	}{
 		"data:image/png;base64," + base64.StdEncoding.EncodeToString(data),
-	}, 0)
+	}, constants.Success)
 }
