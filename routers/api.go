@@ -8,6 +8,7 @@ import (
 func init() {
 	ns := beego.NewNamespace("/v1",
 		beego.NSRouter("/render", &controllers.RenderController{}),
+		beego.NSRouter("/render/config", &controllers.RenderController{}, "get:Config"),
 		beego.NSRouter("/render/upload", &controllers.UploadController{}),
 		beego.NSRouter("/share", &controllers.ShareController{}, "post:CreateShare"),
 	)

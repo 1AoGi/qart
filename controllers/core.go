@@ -116,3 +116,12 @@ func (c *RenderController) Post() {
 		"data:image/png;base64," + base64.StdEncoding.EncodeToString(data),
 	}, constants.Success)
 }
+
+func (c *RenderController) Config() {
+	operation, err := request.NewOperation()
+	if err != nil {
+		c.Fail(nil, constants.Panic, err.Error())
+		return
+	}
+	c.Success(operation, constants.Success)
+}
