@@ -74,7 +74,7 @@ func (c *RenderController) Post() {
 	}
 	sessionKey := sessionutils.SessionKey(operation.Image, constants.SessionImageKey)
 	if operation.Image == "default" && c.GetSession(sessionKey) == nil {
-		data, _, _ := utils.Read(utils.GetUploadPath("default.png"))
+		data, _, _ := utils.Read(utils.GetAssetsPath("default.png"))
 		defaultImage, err := png.Decode(bytes.NewBuffer(data))
 		if err == nil {
 			c.SetSession(sessionKey, defaultImage)
