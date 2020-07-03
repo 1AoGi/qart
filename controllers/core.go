@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/astaxie/beego/logs"
 	"github.com/tautcony/qart/controllers/base"
 	"github.com/tautcony/qart/controllers/constants"
 	"github.com/tautcony/qart/controllers/sessionutils"
@@ -14,7 +15,6 @@ import (
 	"github.com/tautcony/qart/models/request"
 	"image"
 	"image/png"
-	"log"
 )
 
 type UploadController struct {
@@ -33,16 +33,16 @@ type RenderController struct {
 func (c *UploadController) Post() {
 	f, header, err := c.GetFile("image")
 	if err != nil {
-		log.Println("get file err ", err)
+		logs.Error("get file err %v", err)
 		c.Fail(nil, constants.UploadFailed, err.Error())
 		return
 	}
-	log.Println("get file", header.Filename, "with size", header.Size)
+	logs.Debug("get file %v with size: %v", header.Filename, header.Size)
 
 	img, err := utils.GetImageThumbnail(f)
 	defer f.Close()
 	if err != nil {
-		log.Println("down sampling err ", err)
+		logs.Error("down sampling err %v", err)
 		c.Fail(nil, constants.ConvertFailed, err.Error())
 		return
 	}
@@ -74,6 +74,7 @@ func (c *RenderController) Post() {
 	}
 	sessionKey := sessionutils.SessionKey(operation.Image, constants.SessionImageKey)
 	if operation.Image == "default" && c.GetSession(sessionKey) == nil {
+		logs.Debug("Load default image from assets")
 		data, _, _ := utils.Read(utils.GetAssetsPath("default.png"))
 		defaultImage, err := png.Decode(bytes.NewBuffer(data))
 		if err == nil {

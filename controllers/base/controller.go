@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/beego/i18n"
 	"github.com/tautcony/qart/models/response"
 	"golang.org/x/text/language"
 	"golang.org/x/text/language/display"
-	"log"
 	"path"
 	"strings"
 	"time"
@@ -111,7 +111,7 @@ func initLocales() {
 	langConfig := beego.AppConfig.String("lang::available_lang")
 	err := json.Unmarshal([]byte(langConfig), &availableLangs)
 	if err != nil {
-		log.Fatalln("Language config invalid", langConfig)
+		logs.Error("Language config invalid", langConfig)
 		return
 	}
 
@@ -122,9 +122,9 @@ func initLocales() {
 	}
 
 	for _, tag := range langTags {
-		log.Printf("Loading language: %v[%v]\n", display.Self.Name(tag), tag.String())
+		logs.Info("Loading language: %v[%v]", display.Self.Name(tag), tag.String())
 		if err := i18n.SetMessage(tag.String(), path.Join("conf", "locale", fmt.Sprintf("locale_%v.ini", tag.String()))); err != nil {
-			log.Println("Fail to set message file: " + err.Error())
+			logs.Error("Fail to set message file: " + err.Error())
 			return
 		}
 	}
