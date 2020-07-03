@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html dir="ltr">
+<html dir="ltr" lang="{{.CurLang.Lang}}">
 <head>
     <title>QArt Coder</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -51,7 +51,7 @@
                     <div class="col">QArt Coder</div>
                     <div class="dropdown col">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
-                            {{.CurLang}}
+                            {{.CurLang.Name}}
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             {{range $i, $v := .RestLangs}}
