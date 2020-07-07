@@ -9,7 +9,7 @@ import (
 )
 
 func Draw(op *request.Operation, i image.Image) (*Image, error) {
-	target := makeTarget(i, 17+4*op.Version+op.Size)
+	target := MakeTarget(i, 17+4*op.Version+op.Size)
 
 	qrImage := &Image{
 		Name:         op.Image,
@@ -35,7 +35,7 @@ func Draw(op *request.Operation, i image.Image) (*Image, error) {
 	return qrImage, nil
 }
 
-func makeTarget(i image.Image, max int) [][]int {
+func MakeTarget(i image.Image, max int) [][]int {
 	b := i.Bounds()
 	dx, dy := max, max
 	if b.Dx() > b.Dy() {

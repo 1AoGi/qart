@@ -3,12 +3,33 @@ package utils
 import (
 	"bytes"
 	"fmt"
+	"github.com/nfnt/resize"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/png"
+	"io"
 	"rsc.io/qr/coding"
 )
+
+func GetImageThumbnail(r io.Reader) (image.Image, error) {
+	img, _, err := image.Decode(r)
+	if err != nil {
+		return nil, err
+	}
+	// Convert image to 256x256 size.
+	b := img.Bounds()
+	const max = 256
+	dx, dy := max, max
+	if b.Dx() > b.Dy() {
+		dy = b.Dy() * dx / b.Dx()
+	} else {
+		dx = b.Dx() * dy / b.Dy()
+	}
+	i128 := resize.Resize(uint(dx), uint(dy), img, resize.Bicubic)
+
+	return i128, nil
+}
 
 // todo: add caption
 func MakeImage(caption, font string, pt, size, border, scale int, f func(x, y int) uint32) *image.RGBA {
