@@ -82,12 +82,11 @@ func (c *RenderController) Post() {
 		}
 	}
 
-	sessionData := c.GetSession(sessionKey)
-	if sessionData == nil {
+	uploadImage, ok := c.GetSession(sessionKey).(image.Image)
+	if ok == false {
 		c.Fail(nil, constants.ImageNotFound, "image not found, please upload first")
 		return
 	}
-	uploadImage := sessionData.(image.Image)
 	img, err := qr.Draw(operation, uploadImage)
 	if err != nil {
 		c.Fail(nil, constants.EncodeFailed, err.Error())

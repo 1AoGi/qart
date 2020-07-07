@@ -23,13 +23,12 @@ func (c *ShareController) CreateShare() {
 		c.Fail(nil, constants.RequestInvalid, err.Error())
 		return
 	}
-	config := c.GetSession(sessionutils.SessionKey(share.Image, "config"))
-	if config == nil {
+	qrImage, ok := c.GetSession(sessionutils.SessionKey(share.Image, "config")).(*qr.Image)
+	if ok == false {
 		c.Fail(nil, constants.ImageNotFound, "Image not found")
 		return
 	}
-	image := config.(*qr.Image)
-	pngData := image.Code.PNG()
+	pngData := qrImage.Code.PNG()
 	sha := fmt.Sprintf("%x", sha256.Sum256(pngData))
 	if err := utils.Write(utils.GetQrsavePath(sha), pngData); err != nil {
 		panic(err)
