@@ -149,7 +149,7 @@ function applyOperation(operation) {
             element.addEventListener('change', handler);
         }
     });
-    Element.input.op_upload_input.addEventListener('change', event => {
+    Element.input.op_upload_input.addEventListener('input', event => {
         let files = event.target.files;
         if (files && files.length > 0) {
             Api.upload(files[0]).then(function (response) {
