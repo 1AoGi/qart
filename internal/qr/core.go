@@ -35,7 +35,7 @@ func Draw(op *request.Operation, i image.Image) (*Image, error) {
 	return qrImage, nil
 }
 
-func MakeTarget(i image.Image, max int) [][]int {
+func MakeTarget(i image.Image, max int) [][]byte {
 	b := i.Bounds()
 	dx, dy := max, max
 	if b.Dx() > b.Dy() {
@@ -47,20 +47,15 @@ func MakeTarget(i image.Image, max int) [][]int {
 
 	b = thumbnail.Bounds()
 	dx, dy = b.Dx(), b.Dy()
-	target := make([][]int, dy)
-	arr := make([]int, dx*dy)
+	target := make([][]byte, dy)
+	arr := make([]byte, dx*dy)
 	for y := 0; y < dy; y++ {
 		target[y], arr = arr[:dx], arr[dx:]
 		row := target[y]
 		for x := 0; x < dx; x++ {
 			p := thumbnail.At(x, y)
-			_, _, _, a := p.RGBA()
 			luminance := color.Gray16Model.Convert(p).(color.Gray16)
-			if a == 0 {
-				row[x] = -1
-			} else {
-				row[x] = int(luminance.Y >> 8)
-			}
+			row[x] = byte(luminance.Y >> 8)
 		}
 	}
 	return target

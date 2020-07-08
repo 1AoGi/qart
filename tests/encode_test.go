@@ -13,7 +13,7 @@ var (
 	version    = 6
 	size       = 4
 	imageFile  image.Image
-	targetData [][]int
+	targetData [][]byte
 )
 
 func init() {
