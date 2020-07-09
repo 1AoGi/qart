@@ -19,7 +19,7 @@ type Operation struct {
 	OnlyDataBits bool   `json:"onlydatabits" default:"false"`
 	SaveControl  bool   `json:"savecontrol" default:"false"`
 	Seed         string `json:"seed"`
-	Scale        int    `json:"scale" default:"4"`
+	Scale        int    `json:"scale" default:"6"`
 	Rotation     int    `json:"rotation" default:"0"` // range in [0,3]
 }
 
