@@ -40,7 +40,12 @@ func (c *UploadController) Post() {
 	logs.Debug("get file %v with size: %v", header.Filename, header.Size)
 
 	img, err := utils.GetImageThumbnail(f)
-	defer f.Close()
+	defer func() {
+		ferr := f.Close()
+		if ferr != nil {
+			panic(ferr)
+		}
+	}()
 	if err != nil {
 		logs.Error("down sampling err %v", err)
 		c.Fail(nil, constants.ConvertFailed, err.Error())

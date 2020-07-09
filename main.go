@@ -14,6 +14,9 @@ func main() {
 		}
 	}
 	// Register template functions.
-	beego.AddFuncMap("i18n", i18n.Tr)
+	err := beego.AddFuncMap("i18n", i18n.Tr)
+	if err != nil {
+		panic(err)
+	}
 	beego.Run()
 }
