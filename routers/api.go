@@ -11,6 +11,9 @@ func init() {
 		beego.NSRouter("/render/config", &controllers.RenderController{}, "get:Config"),
 		beego.NSRouter("/render/upload", &controllers.UploadController{}),
 		beego.NSRouter("/share", &controllers.ShareController{}, "post:CreateShare"),
+		beego.NSRouter("/debug/frame", &controllers.DebugController{}, "get:Frame"),
+		beego.NSRouter("/debug/mask", &controllers.DebugController{}, "get:Mask"),
+		beego.NSRouter("/debug/encode", &controllers.DebugController{}, "get:Encode"),
 	)
 	beego.AddNamespace(ns)
 }
