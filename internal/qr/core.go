@@ -6,10 +6,11 @@ import (
 	"image"
 	"image/color"
 	_ "image/png"
+	"rsc.io/qr/coding"
 )
 
 func Draw(op *request.Operation, i image.Image) (*Image, error) {
-	target := MakeTarget(i, 17+4*op.Version+op.Size)
+	target := MakeTarget(i, 17+4*int(op.Version)+op.Size)
 
 	qrImage := &Image{
 		Name:         op.Image,
@@ -17,7 +18,8 @@ func Draw(op *request.Operation, i image.Image) (*Image, error) {
 		Dy:           op.Dy,
 		URL:          op.URL,
 		Version:      op.GetVersion(),
-		Mask:         op.Mask,
+		Mask:         op.GetMask(),
+		Level:        coding.L,
 		RandControl:  op.RandControl,
 		Dither:       op.Dither,
 		OnlyDataBits: op.OnlyDataBits,

@@ -6,12 +6,13 @@ import (
 	"image"
 	"os"
 	"path/filepath"
+	"rsc.io/qr/coding"
 	"testing"
 )
 
 var (
-	version    = 6
-	size       = 4
+	version    coding.Version = 6
+	size                      = 4
 	imageFile  image.Image
 	targetData [][]byte
 )
@@ -21,19 +22,24 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close()
+	defer func() {
+		ferr := f.Close()
+		if ferr != nil {
+			panic(ferr)
+		}
+	}()
 	imageFile, err = utils.GetImageThumbnail(f)
 	if err != nil {
 		imageFile = nil
 		panic(err)
 	}
-	targetData = qr.MakeTarget(imageFile, 17+4*version+size)
+	targetData = qr.MakeTarget(imageFile, 17+4*int(version)+size)
 }
 
 func BenchmarkMakeTarget(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		_ = qr.MakeTarget(imageFile, 17+4*version+size)
+		_ = qr.MakeTarget(imageFile, 17+4*int(version)+size)
 	}
 }
 
@@ -47,6 +53,7 @@ func BenchmarkEncode(b *testing.B) {
 			URL:          "https://example.com",
 			Version:      version,
 			Mask:         2,
+			Level:        coding.L,
 			RandControl:  false,
 			Dither:       false,
 			OnlyDataBits: false,

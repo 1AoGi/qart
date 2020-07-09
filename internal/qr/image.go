@@ -18,9 +18,9 @@ type Image struct {
 	Dx       int
 	Dy       int
 	URL      string
-	Tag      string
-	Version  int
-	Mask     int
+	Version  coding.Version
+	Mask     coding.Mask
+	Level    coding.Level
 	Scale    int
 	Rotation int
 	Size     int
@@ -82,7 +82,7 @@ func (m *Image) rotate(p *coding.Plan, rot int) {
 }
 
 func (m *Image) Encode() error {
-	p, err := coding.NewPlan(coding.Version(m.Version), coding.L, coding.Mask(m.Mask))
+	p, err := coding.NewPlan(m.Version, m.Level, m.Mask)
 	if err != nil {
 		return err
 	}
