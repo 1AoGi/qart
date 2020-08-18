@@ -1,0 +1,8 @@
+version: "3.8"
+services: 
+  qart:
+    image: local/qart
+    build:
+      context: .
+    ports:
+      - 8888:8080
